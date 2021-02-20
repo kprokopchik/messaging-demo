@@ -24,6 +24,12 @@ public class Order {
     @Column
     private OrderStatus status;
 
+    @Column
+    private Boolean itemsReserved;
+
+    @Column
+    private Boolean userQuotaDeducted;
+
     @OneToMany(mappedBy = "orderId", cascade = CascadeType.ALL)
     private List<OrderContent> orderContent;
 }

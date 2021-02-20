@@ -1,0 +1,36 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/order_db"
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+  cloud:
+    stream:
+      bindings:
+        reserveItemChannelOut:
+          destination: reserveItemChannelOut
+          group: Out
+        reserveItemChannelIn:
+          destination: reserveItemChannelIn
+          group: In
+          producer:
+            required-groups: In
+        deductUserQuotaChannelOut:
+          destination: deductUserQuotaChannelOut
+          group: Out
+        deductUserQuotaChannelIn:
+          destination: deductUserQuotaChannelIn
+          group: In
+          producer:
+            required-groups: In
+
+app:
+  inventory-service:
+    url: "http://localhost:8081"
+  user-service:
+    url: "http://localhost:8083"

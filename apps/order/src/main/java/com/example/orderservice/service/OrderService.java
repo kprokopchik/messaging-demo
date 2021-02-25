@@ -72,11 +72,6 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(Order order) {
-        orderRepository.findById(order.getId())
-                .ifPresent(storedOrder -> {
-                    throw new RuntimeException("Order already exists: " + storedOrder);
-                });
-
         order.getOrderContent().forEach(orderContent -> orderContent.setOrderId(order.getId()));
 
         inventoryService.reserveItems(order.getId(), order.getOrderContent());

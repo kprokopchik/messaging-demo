@@ -1,6 +1,5 @@
 package com.example.userservice.service;
 
-import com.example.userservice.model.Quota;
 import com.example.userservice.model.QuotaDelta;
 import com.example.userservice.model.QuotaRepository;
 import com.google.common.base.Preconditions;

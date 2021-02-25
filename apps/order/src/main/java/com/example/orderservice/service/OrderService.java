@@ -6,12 +6,13 @@ import com.example.orderservice.remote.InventoryService;
 import com.example.orderservice.remote.UserService;
 import com.example.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -20,11 +21,6 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(Order order) {
-        orderRepository.findById(order.getId())
-                .ifPresent(storedOrder -> {
-                    throw new RuntimeException("Order already exists: " + storedOrder);
-                });
-
         order.getOrderContent().forEach(orderContent -> orderContent.setOrderId(order.getId()));
 
         inventoryService.reserveItems(order.getId(), order.getOrderContent());

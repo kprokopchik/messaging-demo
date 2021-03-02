@@ -1,0 +1,110 @@
+{
+  "asyncapi": "2.0.0",
+
+  "info": {
+    "title": "warehouse",
+    "version": "0.0.1",
+    "description": "WarehouseApp",
+    "termsOfService": "https://terms.of.service.com/"
+  },
+
+  "servers": {
+    "order": {
+      "url": "localhost:8083",
+      "description": "User Service",
+      "protocol": "amqp"
+    }
+  },
+
+  "channels": {
+    "inventoryReservationCreatedForOrder": {
+      "subscribe": {
+        "operationId": "onInventoryReservationCreatedForOrder",
+        "x-scs-group": "inventory",
+        "message": {
+          "$ref": "#/components/messages/inventory-reservation-created-for-order"
+        }
+      }
+    },
+    "quotaDeductedForOrder": {
+      "publish": {
+        "operationId": "onQuotaDeductedForOrder",
+        "x-scs-function-name": "onInventoryReservationCreatedForOrder",
+        "message": {
+          "$ref": "#/components/messages/quota-deducted-for-order"
+        }
+      }
+    },
+    "quotaDeductionCancelledForOrder": {
+      "publish": {
+        "operationId": "onQuotaDeductionCancelledForOrder",
+        "message": {
+          "$ref": "#/components/messages/quota-deduction-cancelled-for-order"
+        }
+      }
+    }
+  },
+
+  "components": {
+    "messages": {
+
+      "inventory-reservation-created-for-order": {
+        "payload": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Order ID",
+              "type": "string"
+            },
+            "userId": {
+              "description": "User ID",
+              "type": "string"
+            },
+            "orderContent": {
+              "description": "List of items and their quantities",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "itemId": {
+                    "type": "string"
+                  },
+                  "count": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "quota-deducted-for-order": {
+        "payload": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+
+      "quota-deduction-cancelled-for-order": {
+        "payload": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "reason": {
+              "description": "Describes a reason why quota deduction cancelled",
+              "type": "string"
+            }
+          }
+        }
+      }
+
+    }
+  }
+}

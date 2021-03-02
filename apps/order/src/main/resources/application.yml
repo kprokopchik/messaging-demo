@@ -10,24 +10,26 @@ spring:
     hibernate:
       ddl-auto: update
   cloud:
+    function:
+      definition: onOrderCreatedDraft;onInventoryReservationCancelledForOrder;onQuotaDeductedForOrder
     stream:
+      poller:
+        fixed-delay: 100
       bindings:
-        reserveItemChannelOut:
-          destination: reserveItemChannelOut
-          group: Out
-        reserveItemChannelIn:
-          destination: reserveItemChannelIn
-          group: In
+        onOrderCreatedDraft-out-0:
+          binder: pubsub
+          destination: orderCreatedDraft
+          group: order
           producer:
-            required-groups: In
-        deductUserQuotaChannelOut:
-          destination: deductUserQuotaChannelOut
-          group: Out
-        deductUserQuotaChannelIn:
-          destination: deductUserQuotaChannelIn
-          group: In
-          producer:
-            required-groups: In
+            required-groups: order # create queue explicitly - for supplier
+        onInventoryReservationCancelledForOrder-in-0:
+          binder: pubsub
+          destination: inventoryReservationCancelledForOrder
+          group: inventory
+        onQuotaDeductedForOrder-in-0:
+          binder: pubsub
+          destination: quotaDeductedForOrder
+          group: quota # create durable queue
 
 app:
   inventory-service:

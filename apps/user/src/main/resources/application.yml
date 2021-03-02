@@ -10,15 +10,19 @@ spring:
     hibernate:
       ddl-auto: update
   cloud:
+    function:
+      definition: onInventoryReservationCreatedForOrder;onQuotaDeductionCancelledForOrder
     stream:
       bindings:
-        deductUserQuotaChannelOut:
-          binder: rabbit
-          destination: deductUserQuotaChannelOut
-          group: Out
-          producer:
-            required-groups: Out
-        deductUserQuotaChannelIn:
-          binder: rabbit
-          destination: deductUserQuotaChannelIn
-          group: In
+        onInventoryReservationCreatedForOrder-out-0:
+          destination: quota-deducted-for-order
+          group: quota
+          binder: pubsub
+        onInventoryReservationCreatedForOrder-in-0:
+          destination: inventory-reservation-created-for-order
+          group: inventory
+          binder: pubsub
+        onQuotaDeductionCancelledForOrder-out-0:
+          destination: quota-deduction-cancelled-for-order
+          group: quota
+          binder: pubsub

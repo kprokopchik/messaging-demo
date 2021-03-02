@@ -8,9 +8,11 @@
     <name>inventory-service</name>
     <properties>
         <java.version>1.8</java.version>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
         <swagger.version>2.9.2</swagger.version>
         <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
-        <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
+        <spring.cloud.version>Hoxton.SR1</spring.cloud.version>
     </properties>
     <dependencies>
         <dependency>
@@ -19,7 +21,8 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+            <!--            <artifactId>spring-cloud-stream-binder-rabbit</artifactId>-->
+            <artifactId>spring-cloud-gcp-pubsub-stream-binder</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -82,7 +85,14 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
+                <version>${spring.cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-gcp-dependencies</artifactId>
+                <version>1.2.7.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

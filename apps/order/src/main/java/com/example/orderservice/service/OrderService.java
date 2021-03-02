@@ -1,9 +1,6 @@
 package com.example.orderservice.service;
 
-import com.example.orderservice.messaging.DeductUserQuotaEvent;
-import com.example.orderservice.messaging.DeductUserQuotaPublisher;
-import com.example.orderservice.messaging.ReserveItemEvent;
-import com.example.orderservice.messaging.ReserveItemPublisher;
+import com.example.orderservice.integration.OrderSink;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderContent;
 import com.example.orderservice.model.OrderStatus;
@@ -15,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.function.Consumer;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -25,8 +20,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final InventoryService inventoryService;
     private final UserService userService;
-    private final ReserveItemPublisher reserveItemsPublisher;
-    private final DeductUserQuotaPublisher deductUserQuotaPublisher;
+    private final OrderSink orderSink;
 
     @Transactional
     public void createOrderAsync(Order order) {
@@ -34,31 +28,22 @@ public class OrderService {
         for (OrderContent orderContent : order.getOrderContent()) {
             orderContent.setOrderId(order.getId());
         }
-        order.setItemsReserved(false);
-        order.setUserQuotaDeducted(false);
         order = orderRepository.saveAndFlush(order);
-        reserveItemsPublisher.send(new ReserveItemEvent(order, null));
-        deductUserQuotaPublisher.send(new DeductUserQuotaEvent(order, null));
+        orderSink.accept(order);
     }
 
     @Transactional
-    public void updateOrder(String orderId, Consumer<Order> modifier) {
-        log.info("T start");
+    public void confirmOrder(String orderId) {
         orderRepository.findById(orderId)
                 .ifPresent(order -> {
                     if (order.getStatus() != OrderStatus.DRAFT) {
                         log.warn("Can not update order having status: {}", order.getStatus());
                         return;
                     }
-                    log.info("Update order '{}'", orderId);
-                    modifier.accept(order);
-                    if (order.getItemsReserved() && order.getUserQuotaDeducted()) {
-                        log.info("ORDER '{}' READY_FOR_DISPATCH", orderId);
-                        order.setStatus(OrderStatus.READY_FOR_DISPATCH);
-                    }
+                    order.setStatus(OrderStatus.READY_FOR_DISPATCH);
+                    log.info("ORDER '{}' READY_FOR_DISPATCH", orderId);
                     orderRepository.saveAndFlush(order);
                 });
-        log.info("T end");
     }
 
     public void cancelOrder(String orderId) {
@@ -66,7 +51,7 @@ public class OrderService {
         try {
             orderRepository.deleteById(orderId);
         } catch (Exception e) {
-            log.info("ODRER {} NOT FOUND", orderId);
+            log.info("ORDER {} NOT FOUND", orderId);
         }
     }
 

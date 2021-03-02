@@ -15,6 +15,9 @@ public class UserService {
 
     private final QuotaRepository quotaRepository;
 
+    /**
+     * WARNING: current implementation violates idempotency requirements!
+     * */
     @Transactional
     public void deductUserQuota(String userId, List<QuotaDelta> deductions) {
         for (QuotaDelta deduction : deductions) {

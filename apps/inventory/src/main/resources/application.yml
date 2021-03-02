@@ -10,13 +10,30 @@ spring:
     hibernate:
       ddl-auto: update
   cloud:
+    function:
+      definition: onOrderCreatedDraft;onInventoryReservationCancelledForOrder;onQuotaDeductionCancelledForOrder
     stream:
       bindings:
-        reserveItemChannelOut:
-          destination: reserveItemChannelOut
-          group: Out
+        onOrderCreatedDraft-in-0:
+          binder: pubsub
+          destination: orderCreatedDraft
+          group: order
+          consumer:
+            concurrency: 4 # customize concurrency for inbound events stream processing
+        onOrderCreatedDraft-out-0:
+          destination: inventoryReservationCreatedForOrder
+          binder: pubsub
+          group: inventory
           producer:
-            required-groups: Out
-        reserveItemChannelIn:
-          destination: reserveItemChannelIn
-          group: In
+            required-groups: inventory # create queue explicitly
+        onInventoryReservationCancelledForOrder-out-0:
+          binder: pubsub
+          destination: inventoryReservationCancelledForOrder
+          group: inventory
+          producer:
+            required-groups: inventory # create queue explicitly
+        onQuotaDeductionCancelledForOrder-in-0:
+          binder: pubsub
+          destination: quotaDeductionCancelledForOrder
+          group: quota
+

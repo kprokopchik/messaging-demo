@@ -2,8 +2,13 @@ server:
   port: 8082
 
 spring:
+  application:
+    name: order-service
+  sleuth:
+    sampler:
+      probability: 1
   datasource:
-    url: "jdbc:mysql://localhost:3306/order_db"
+    url: "jdbc:mysql://localhost:3306/order_db?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor"
     username: root
     password: root
   jpa:
@@ -14,7 +19,7 @@ spring:
       definition: onOrderCreatedDraft;onInventoryReservationCancelledForOrder;onQuotaDeductedForOrder
     stream:
       poller:
-        fixed-delay: 100
+        fixed-delay: 10
       bindings:
         onOrderCreatedDraft-out-0:
           binder: pubsub

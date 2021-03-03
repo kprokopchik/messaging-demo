@@ -1,6 +1,7 @@
 package com.example.orderservice.model;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "order_t")
+@ToString
 public class Order {
 
     @Id

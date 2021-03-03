@@ -1,6 +1,7 @@
 package com.example.orderservice.model;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "order_content")
+@ToString
 public class OrderContent {
 
     @Id

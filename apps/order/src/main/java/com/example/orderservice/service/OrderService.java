@@ -24,6 +24,7 @@ public class OrderService {
 
     @Transactional
     public void createOrderAsync(Order order) {
+        log.info("Requested order: {}", order);
         order.setStatus(OrderStatus.DRAFT);
         for (OrderContent orderContent : order.getOrderContent()) {
             orderContent.setOrderId(order.getId());
@@ -57,6 +58,7 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(Order order) {
+        log.info("[SYNC] Requested order: {}", order);
         order.getOrderContent().forEach(orderContent -> orderContent.setOrderId(order.getId()));
 
         inventoryService.reserveItems(order.getId(), order.getOrderContent());
@@ -67,6 +69,7 @@ public class OrderService {
 
         Order entity = orderRepository.save(order);
 
+        log.info("[SYNC] Order ready: {}", entity);
         return entity;
     }
 

@@ -2,8 +2,10 @@ server:
   port: 8081
 
 spring:
+  application:
+    name: inventory-service
   datasource:
-    url: "jdbc:mysql://localhost:3306/inventory_db"
+    url: "jdbc:mysql://localhost:3306/inventory_db?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor"
     username: root
     password: root
   jpa:
@@ -13,6 +15,8 @@ spring:
     function:
       definition: onOrderCreatedDraft;onInventoryReservationCancelledForOrder;onQuotaDeductionCancelledForOrder
     stream:
+      poller:
+        fixed-delay: 10
       bindings:
         onOrderCreatedDraft-in-0:
           binder: pubsub

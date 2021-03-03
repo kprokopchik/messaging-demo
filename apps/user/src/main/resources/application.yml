@@ -2,8 +2,10 @@ server:
   port: 8083
 
 spring:
+  application:
+    name: user-service
   datasource:
-    url: "jdbc:mysql://localhost:3306/user_db"
+    url: "jdbc:mysql://localhost:3306/user_db?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor"
     username: root
     password: root
   jpa:
@@ -13,16 +15,18 @@ spring:
     function:
       definition: onInventoryReservationCreatedForOrder;onQuotaDeductionCancelledForOrder
     stream:
+      poller:
+        fixed-delay: 10
       bindings:
-        onInventoryReservationCreatedForOrder-out-0:
-          destination: quota-deducted-for-order
-          group: quota
-          binder: pubsub
         onInventoryReservationCreatedForOrder-in-0:
-          destination: inventory-reservation-created-for-order
+          destination: inventoryReservationCreatedForOrder
           group: inventory
           binder: pubsub
+        onInventoryReservationCreatedForOrder-out-0:
+          destination: quotaDeductedForOrder
+          group: quota
+          binder: pubsub
         onQuotaDeductionCancelledForOrder-out-0:
-          destination: quota-deduction-cancelled-for-order
+          destination: quotaDeductionCancelledForOrder
           group: quota
           binder: pubsub

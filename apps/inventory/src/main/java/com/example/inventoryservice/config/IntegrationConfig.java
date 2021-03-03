@@ -20,11 +20,10 @@ import java.util.function.Supplier;
 @Slf4j
 public class IntegrationConfig {
 
-    private final EmitterProcessor<OrderUpdate> cancelOrderEmitter = EmitterProcessor.create();
+    private final EmitterProcessor<OrderUpdate> cancelOrderPublisher = EmitterProcessor.create();
 
     @Autowired
     private InventoryService inventoryService;
-
 
     @Bean
     public Function<Flux<Order>, Flux<Order>> onOrderCreatedDraft() {
@@ -41,7 +40,7 @@ public class IntegrationConfig {
                     if (exception instanceof OrderFailedException) {
                         OrderFailedException err = (OrderFailedException) exception;
                         log.warn("Item reservation failed for order {} due to {}", err.getOrder().getId(), err.getMessage());
-                        cancelOrderEmitter.onNext(new OrderUpdate(err.getOrder().getId(), err.getMessage()));
+                        cancelOrderPublisher.onNext(new OrderUpdate(err.getOrder().getId(), err.getMessage()));
                     }
                     return Mono.empty();
                 })
@@ -51,13 +50,18 @@ public class IntegrationConfig {
     @Bean
     public Consumer<Flux<OrderUpdate>> onQuotaDeductionCancelledForOrder() {
         return flux -> flux
-                .doOnNext(orderUpdate -> inventoryService.cancelReservation(orderUpdate.getOrderId()))
-                .doOnNext(cancelOrderEmitter::onNext);
+                .doOnNext(orderUpdate -> {
+                    log.info("Cancel inventory reservation for order {} due to {}",
+                            orderUpdate.getOrderId(), orderUpdate.getReason());
+                    inventoryService.cancelReservation(orderUpdate.getOrderId());
+                })
+                .doOnNext(cancelOrderPublisher::onNext)
+                .subscribe();
     }
 
     @Bean
     public Supplier<Flux<OrderUpdate>> onInventoryReservationCancelledForOrder() {
-        return () -> cancelOrderEmitter;
+        return () -> cancelOrderPublisher;
     }
 
 }

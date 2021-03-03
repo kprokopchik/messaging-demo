@@ -52,5 +52,6 @@ public class InventoryService {
             );
             dispatchRepository.save(dispatch);
         }
+        log.info("Order {} reservation created", orderId);
     }
 }

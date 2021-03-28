@@ -1,7 +1,5 @@
 package com.example.orderservice.config;
 
-import brave.Tracer;
-import com.example.orderservice.integration.OrderSink;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderConfirmation;
 import com.example.orderservice.service.OrderService;
@@ -22,9 +20,6 @@ public class IntegrationConfig {
     @Autowired
     private OrderService orderService;
 
-    @Autowired
-    private Tracer tracer;
-
     /**
      * For external events source we will use reactive EmitterProcessor
      * https://docs.spring.io/spring-cloud-stream/docs/current/reference/html/spring-cloud-stream.html#_sending_arbitrary_data_to_an_output_e_g_foreign_event_driven_sources
@@ -32,7 +27,7 @@ public class IntegrationConfig {
     private final EmitterProcessor<Order> orderDraftPublisher = EmitterProcessor.create();
 
     @Bean
-    public OrderSink orderSink() {
+    public Consumer<Order> orderSink() {
         return order -> {
             log.info("in sink");
             orderDraftPublisher.onNext(order);

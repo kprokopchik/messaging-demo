@@ -1,6 +1,5 @@
 package com.example.orderservice.service;
 
-import com.example.orderservice.integration.OrderSink;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderContent;
 import com.example.orderservice.model.OrderStatus;
@@ -12,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,17 +22,22 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final InventoryService inventoryService;
     private final UserService userService;
-    private final OrderSink orderSink;
+    private final Optional<Consumer<Order>> orderSink;
 
     @Transactional
     public void createOrderAsync(Order order) {
         log.info("Requested order: {}", order);
+        if (!orderSink.isPresent()) {
+            log.error("OrderSink not configured");
+            return;
+        }
+
         order.setStatus(OrderStatus.DRAFT);
         for (OrderContent orderContent : order.getOrderContent()) {
             orderContent.setOrderId(order.getId());
         }
         order = orderRepository.saveAndFlush(order);
-        orderSink.accept(order);
+        orderSink.get().accept(order);
     }
 
     @Transactional

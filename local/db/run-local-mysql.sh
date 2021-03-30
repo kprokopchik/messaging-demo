@@ -18,4 +18,4 @@ SQL="CREATE DATABASE IF NOT EXISTS inventory_db; \
 CREATE DATABASE IF NOT EXISTS order_db; \
 CREATE DATABASE IF NOT EXISTS user_db;"
 
-docker exec -e MYSQL_PWD=$MYSQL_ROOT_PASSWORD $CONTAINER_NAME mysql --user=root --execute="$SQL"
+docker exec -e MYSQL_PWD=$MYSQL_ROOT_PASSWORD $CONTAINER_NAME mysql --user=root --execute="$SQL" --protocol=tcp

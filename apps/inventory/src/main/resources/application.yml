@@ -21,8 +21,6 @@ spring:
           binder: pubsub
           destination: orderCreatedDraft
           group: order
-          consumer:
-            concurrency: 4 # customize concurrency for inbound events stream processing
         onOrderCreatedDraft-out-0:
           destination: inventoryReservationCreatedForOrder
           binder: pubsub

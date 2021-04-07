@@ -18,14 +18,14 @@ spring:
     stream:
       bindings:
         onInventoryReservationCreatedForOrder-out-0:
-          destination: quota-deducted-for-order
+          destination: quotaDeductedForOrder
           group: quota
           binder: pubsub
         onInventoryReservationCreatedForOrder-in-0:
-          destination: inventory-reservation-created-for-order
+          destination: inventoryReservationCreatedForOrder
           group: inventory
           binder: pubsub
         onQuotaDeductionCancelledForOrder-out-0:
-          destination: quota-deduction-cancelled-for-order
+          destination: quotaDeductionCancelledForOrder
           group: quota
           binder: pubsub

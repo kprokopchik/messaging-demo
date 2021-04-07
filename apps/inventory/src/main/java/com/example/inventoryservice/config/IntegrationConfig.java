@@ -51,6 +51,9 @@ public class IntegrationConfig {
     @Bean
     public Consumer<Flux<OrderUpdate>> onQuotaDeductionCancelledForOrder() {
         return flux -> flux
+                .doOnNext(orderUpdate -> {
+                    log.info("onQuotaDeductionCancelledForOrder: {}", orderUpdate);
+                })
                 .doOnNext(orderUpdate -> inventoryService.cancelReservation(orderUpdate.getOrderId()))
                 .doOnNext(cancelOrderEmitter::onNext);
     }

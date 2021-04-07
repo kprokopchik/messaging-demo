@@ -1,0 +1,93 @@
+---
+asyncapi: 2.0.0
+
+info:
+  title: warehouse
+  version: 0.0.1
+  description: WarehouseApp
+  termsOfService: https://terms.of.service.com/
+
+servers:
+  order:
+    url: localhost:8081
+    description: Inventory Service
+    protocol: amqp
+
+channels:
+  orderCreatedDraft:
+    subscribe:
+      operationId: onOrderCreatedDraft
+      x-scs-group: order
+      message:
+        "$ref": "#/components/schemas/orderCreatedDraft"
+  inventoryReservationCreatedForOrder:
+    publish:
+      operationId: onReservationCreatedForOrder
+      x-scs-function-name: onOrderCreatedDraft
+      message:
+        "$ref": "#/components/schemas/inventoryReservationCreatedForOrder"
+  quotaDeductionCancelledForOrder:
+    subscribe:
+      operationId: onQuotaDeductionCancelledForOrder
+      x-scs-group: quota
+      message:
+        "$ref": "#/components/schemas/quotaDeductionCancelledForOrder"
+  inventoryReservationCancelledForOrder:
+    publish:
+      operationId: onInventoryReservationCancelledForOrder
+      message:
+        "$ref": "#/components/schemas/inventoryReservationCancelledForOrder"
+
+components:
+  schemas:
+    orderContent:
+      description: List of items and their quantities
+      type: array
+      items:
+        type: object
+        properties:
+          itemId:
+            type: string
+          count:
+            type: integer
+    orderCreatedDraft:
+      name: OrderCreatedDraft
+      payload:
+        type: object
+        properties:
+          id:
+            type: string
+          userId:
+            type: string
+          orderContent:
+            "$ref": "#/components/schemas/orderContent"
+    inventoryReservationCreatedForOrder:
+      payload:
+        type: object
+        properties:
+          id:
+            description: Order ID
+            type: string
+          userId:
+            description: User ID
+            type: string
+          orderContent:
+            "$ref": "#/components/schemas/orderContent"
+    inventoryReservationCancelledForOrder:
+      payload:
+        type: object
+        properties:
+          id:
+            type: string
+          reason:
+            description: Describes a reason why inventory reservation cancelled
+            type: string
+    quotaDeductionCancelledForOrder:
+      payload:
+        type: object
+        properties:
+          id:
+            type: string
+          reason:
+            description: Describes a reason why quota deduction cancelled
+            type: string

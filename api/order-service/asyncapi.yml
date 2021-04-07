@@ -1,0 +1,75 @@
+---
+asyncapi: 2.0.0
+
+info:
+  title: warehouse
+  version: 0.0.1
+  description: WarehouseApp
+  termsOfService: https://terms.of.service.com/
+
+servers:
+  order:
+    url: localhost:8082
+    description: Order Service
+    protocol: amqp
+
+channels:
+  orderCreatedDraft:
+    publish:
+      operationId: onOrderCreatedDraft
+      message:
+        "$ref": "#/components/messages/orderCreatedDraft"
+  inventoryReservationCancelledForOrder:
+    subscribe:
+      operationId: onInventoryReservationCancelledForOrder
+      x-scs-group: inventory
+      message:
+        "$ref": "#/components/messages/inventoryReservationCancelledForOrder"
+  quotaDeductedForOrder:
+    subscribe:
+      operationId: onQuotaDeductedForOrder
+      x-scs-group: quota
+      message:
+        "$ref": "#/components/messages/quotaDeductedForOrder"
+
+components:
+  messages:
+    orderCreatedDraft:
+      payload:
+        type: object
+        properties:
+          id:
+            description: Order ID
+            type: string
+          userId:
+            description: User ID
+            type: string
+          orderContent:
+            description: List of items and their quantities
+            type: array
+            items:
+              type: object
+              properties:
+                itemId:
+                  description: Item ID
+                  type: string
+                count:
+                  description: Number of particular items included in the Order
+                  type: integer
+    inventoryReservationCancelledForOrder:
+      payload:
+        type: object
+        properties:
+          id:
+            description: Order ID
+            type: string
+          reason:
+            description: Describes a reason why inventory reservation cancelled
+            type: string
+    quotaDeductedForOrder:
+      payload:
+        type: object
+        properties:
+          id:
+            description: Order ID
+            type: string

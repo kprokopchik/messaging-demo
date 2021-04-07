@@ -10,6 +10,9 @@ spring:
     hibernate:
       ddl-auto: update
   cloud:
+    gcp:
+      pubsub:
+        emulator-host: "localhost:8085"
     function:
       definition: onOrderCreatedDraft;onInventoryReservationCancelledForOrder;onQuotaDeductedForOrder
     stream:

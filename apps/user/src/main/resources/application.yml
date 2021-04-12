@@ -11,6 +11,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  sleuth:
+    sampler:
+      probability: 1
   cloud:
     function:
       definition: onInventoryReservationCreatedForOrder;onQuotaDeductionCancelledForOrder

@@ -29,7 +29,7 @@ public class OrderService {
         log.info("Requested order: {}", order);
         if (!orderSink.isPresent()) {
             log.error("OrderSink not configured");
-            return;
+            throw new IllegalStateException("OrderSink not configured");
         }
 
         order.setStatus(OrderStatus.DRAFT);

@@ -4,6 +4,9 @@
 * MySQL database
     * [Run MySQL locally](#run-mysql-in-docker-container)
     * [Import sample data to the DB](#import-sample-data-to-the-db)
+* npm
+    * [Install npm on macOS](#install-npm-on-macos)
+    * [Install npm on Windows](#install-npm-on-windows)
 
 
 # Run PubSub Emulator locally
@@ -30,3 +33,14 @@ The MySQL server will be launched at the default 3306 port, and the root user pa
 
 ### Import sample data to the DB
 You may use sample data from the `local/db/data/*.csv` files for import into your DB, so you will have something to start with.
+
+# Install npm 
+You will need npm installed to use AsyncAPI Generator
+
+### Install npm on macOS
+```
+brew install npm 
+```
+
+### Install npm on Windows
+Follow the link: https://nodejs.org/en/download/

@@ -9,6 +9,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  output:
+    ansi:
+      enabled: always
 
 app:
   inventory-service:

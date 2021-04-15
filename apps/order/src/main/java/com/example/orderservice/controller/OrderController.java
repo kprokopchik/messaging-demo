@@ -36,4 +36,9 @@ public class OrderController {
     public Order update(@RequestBody Order order) {
         return orderService.createOrder(order);
     }
+
+    @PostMapping("/async")
+    public void createOrderAsync(@RequestBody Order order) {
+        orderService.createOrderAsync(order);
+    }
 }

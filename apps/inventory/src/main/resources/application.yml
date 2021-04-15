@@ -13,3 +13,32 @@ spring:
   output:
     ansi:
       enabled: always
+  cloud:
+    gcp:
+      pubsub:
+        emulator-host: "localhost:8085"
+    function:
+      definition: onOrderCreatedDraft;onQuotaDeductionCancelledForOrder
+    stream:
+      bindings:
+        onOrderCreatedDraft-in-0:
+          binder: pubsub
+          destination: orderCreatedDraft
+          group: order
+        onOrderCreatedDraft-out-0:
+          destination: inventoryReservationCreatedForOrder
+          binder: pubsub
+          group: inventory
+          producer:
+            required-groups: inventory # create queue explicitly
+        onQuotaDeductionCancelledForOrder-in-0:
+          binder: pubsub
+          destination: quotaDeductionCancelledForOrder
+          group: quota
+        onInventoryReservationCancelledForOrder-out-0:
+          binder: pubsub
+          destination: inventoryReservationCancelledForOrder
+          group: inventory
+          producer:
+            required-groups: inventory # create queue explicitly
+      source: onInventoryReservationCancelledForOrder

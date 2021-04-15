@@ -16,4 +16,10 @@ public interface ItemRepository extends JpaRepository<Item, String> {
             "set i.count = i.count - :count " +
             "where i.id = :itemId and i.count >= :count")
     int decrementItems(@Param("itemId") String itemId, @Param("count") Integer count);
+
+    @Modifying
+    @Query("update Item i " +
+            "set i.count = i.count + :count " +
+            "where i.id = :itemId")
+    int incrementItems(@Param("itemId") String itemId, @Param("count") Integer count);
 }

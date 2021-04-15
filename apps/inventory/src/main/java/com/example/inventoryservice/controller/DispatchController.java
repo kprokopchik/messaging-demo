@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/dispatch")
 @RequiredArgsConstructor
@@ -18,9 +20,8 @@ public class DispatchController {
     private final DispatchRepository dispatchRepository;
 
     @GetMapping("/{order_id}")
-    public Dispatch getByOrder(@PathVariable("order_id") String orderId) {
-        return dispatchRepository.findByOrderId(orderId)
-                .orElse(null);
+    public List<Dispatch> getByOrder(@PathVariable("order_id") String orderId) {
+        return dispatchRepository.findByOrderId(orderId);
     }
 
     @PostMapping

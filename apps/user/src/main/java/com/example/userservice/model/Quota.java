@@ -7,11 +7,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "quota")
+@Table(
+        name = "quota",
+        indexes = {
+                @Index(name = "user_item_idx", columnList = "user_id, item_id", unique = true)
+        }
+)
 public class Quota {
 
     @Id

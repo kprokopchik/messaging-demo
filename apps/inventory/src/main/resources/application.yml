@@ -13,3 +13,24 @@ spring:
   output:
     ansi:
       enabled: always
+  cloud:
+    gcp:
+      pubsub:
+        emulator-host: "localhost:8085"
+    stream:
+      function:
+        definition: draftOrderCreated
+      bindings:
+        draftOrderCreated-in-0:
+          binder: pubsub
+          destination: draftOrderCreated
+          group: inventoryService
+        draftOrderCreated-out-0:
+          binder: pubsub
+          destination: inventoryReserved
+          group: userService
+        inventoryReservationCancelled-out-0:
+          binder: pubsub
+          destination: inventoryReservationCancelled
+          group: orderService
+      source: inventoryReservationCancelled

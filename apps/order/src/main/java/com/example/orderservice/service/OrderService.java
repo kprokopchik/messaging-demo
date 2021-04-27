@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.function.Consumer;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -19,6 +21,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final InventoryService inventoryService;
     private final UserService userService;
+    private final Consumer<Order> orderSink;
 
     @Transactional
     public void confirmOrder(String orderId) {
@@ -56,6 +59,17 @@ public class OrderService {
         Order entity = orderRepository.save(order);
 
         return entity;
+    }
+
+    @Transactional
+    public Order createOrderAsync(Order order) {
+        order.getOrderContent().forEach(orderContent -> orderContent.setOrderId(order.getId()));
+        order.setStatus(OrderStatus.DRAFT);
+        orderRepository.save(order);
+
+        orderSink.accept(order);
+
+        return order;
     }
 
 }

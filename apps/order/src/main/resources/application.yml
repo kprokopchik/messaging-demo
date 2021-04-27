@@ -11,7 +11,24 @@ spring:
       ddl-auto: update
   output:
     ansi:
-      enabled: always
+      enabled:
+  cloud:
+    gcp:
+      pubsub:
+        emulator-host: "localhost:8085"
+    stream:
+      function:
+        definition: inventoryReservationCancelled
+      bindings:
+        draftOrderCreated-out-0:
+          binder: pubsub
+          destination: draftOrderCreated
+          group: inventoryService
+        inventoryReservationCancelled-in-0:
+          binder: pubsub
+          destination: inventoryReservationCancelled
+          group: orderService
+      source: draftOrderCreated
 
 app:
   inventory-service:
